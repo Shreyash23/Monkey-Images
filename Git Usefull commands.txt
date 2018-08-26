@@ -1,0 +1,9 @@
+git remote add origin https://github.com/Shreyash23/Monkey-Images/
+git config remote.origin.url git@github.com:Shreyash23/Monkey-Images
+git pull -u origin master
+git push -u origin master
+
+git config --global user.email "shreyash.shukla.2304.com"
+git config --global user.name "Shreyash23"
+
+git filter-branch --tree-filter 'rm -rf .keras/datasets/cifar-10-batches-py.tar.gz' HEAD
