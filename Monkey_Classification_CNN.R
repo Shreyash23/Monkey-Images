@@ -45,7 +45,7 @@ num_predictions <- 20
 #Augmentation
 # Training generator
 train_datagen <- image_data_generator(
-  rescale=1./255,
+  rescale=as.integer(1%/%255),
   rotation_range=40,
   width_shift_range=0.2,
   height_shift_range=0.2,
@@ -63,7 +63,7 @@ train_generator = train_datagen$flow_from_directory(train_dir,
                                                     class_mode='categorical')
 
 # Test generator
-test_datagen = image_data_generator(rescale=1./255)
+test_datagen = image_data_generator(rescale=as.integer(1%/%255))
 validation_generator = test_datagen$flow_from_directory(test_dir, 
                                                         target_size=list(height,width),
                                                         color_mode = "rgb",
@@ -75,6 +75,8 @@ validation_generator = test_datagen$flow_from_directory(test_dir,
 
 train_num = train_generator$samples
 validation_num = validation_generator$samples
+train_num
+validation_num
 
 #Building the model
 model_keras <- keras_model_sequential()
@@ -114,9 +116,9 @@ model_keras %>%
 
 summary(model_keras)
 
-history <- model_keras  %>% fit_generator((train_generator),
+history <- model_keras  %>% fit_generator(train_generator,
                               # batch_size = batch_size,
-                              steps_per_epoch= 1097/64,
-                              epochs=200,
-                              validation_data=(validation_generator),
-                              validation_steps= 272/64)
+                              steps_per_epoch= train_num %/% batch_size,
+                              epochs=as.integer(epochs),
+                              validation_data=validation_generator,
+                              validation_steps= validation_num %/% batch_size)
