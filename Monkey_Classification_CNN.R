@@ -34,6 +34,7 @@ epochs <- 200
 data_augmentation <- TRUE
 num_predictions <- 20
 
+#Augmentation
 # Training generator
 train_datagen <- image_data_generator(
   rescale=1./255,
@@ -52,3 +53,103 @@ train_generator = train_datagen$flow_from_directory(train_dir,
                                                     seed=seed,
                                                     shuffle=TRUE,
                                                     class_mode='categorical')
+
+# Test generator
+test_datagen = image_data_generator(rescale=1./255)
+validation_generator = test_datagen$flow_from_directory(test_dir, 
+                                                        target_size=list(height,width),
+                                                        color_mode = "rgb",
+                                                        batch_size=batch_size,
+                                                        seed=seed,
+                                                        shuffle=FALSE,
+                                                        class_mode='categorical')
+
+
+train_num = train_generator$samples
+validation_num = validation_generator$samples
+
+#Building the model
+model_keras <- keras_model_sequential()
+
+model1 <- model_keras %>%
+  layer_conv_2d(filters=32, kernel_size=c(3,3),input_shape=c(150,150,3)) %>%
+  layer_activation("relu") %>%
+  layer_max_pooling_2d(pool_size=c(2,2)) %>%
+  
+  #another 2-D convolution layer
+  layer_conv_2d(filter=32 ,kernel_size=c(3,3))  %>%
+  layer_activation("relu") %>%
+  layer_max_pooling_2d(pool_size=c(2,2)) %>%
+  
+  layer_conv_2d(filter=64 , kernel_size=c(3,3),padding="same") %>% 
+  layer_activation("relu") %>%  
+  layer_conv_2d(filter=64,kernel_size=c(3,3) ) %>%  
+  layer_activation("relu") %>%  
+  layer_max_pooling_2d(pool_size=c(2,2)) %>%  
+  layer_dropout(0.25) %>%
+  
+  #flatten the input 
+  layer_flatten() %>%
+  
+  layer_dense(512) %>%  
+  layer_activation("relu") %>%  
+  layer_dropout(0.5) %>%  
+  
+  #output layer-10 classes-10 units
+  layer_dense(num_classes) %>% 
+  
+  #applying softmax nonlinear activation function to the output layer #to calculate cross-entropy#output layer-10 classes-10 units  
+  layer_activation("softmax")
+
+compile1 <- model_keras %>%
+  compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = c("binary_accuracy"))
+
+summary(compile1)
+
+history <- model1$fit_generator(train_generator,
+                                steps_per_epoch= train_num/batch_size,
+                                epochs=epochs,
+                                validation_data=train_generator,
+                                validation_steps= validation_num/batch_size,
+                                callbacks=callbacks_list, 
+                                verbose = 1)
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
