@@ -24,8 +24,8 @@ image_show <- function(num_image,label){
 
 #Setting up the variables
 LR <- 1e-3
-height<-150
-width<-150
+height<-150L
+width<-150L
 channels<-3
 seed<-1337
 batch_size <- 64
@@ -46,8 +46,9 @@ train_datagen <- image_data_generator(
   fill_mode='nearest')
 
 train_generator = train_datagen$flow_from_directory(train_dir, 
-                                                    target_size=(height,width),
-                                                    batch_size=batch_size,
+                                                    target_size = list(height,width),
+                                                    color_mode = "rgb",
+                                                    batch_size= batch_size,
                                                     seed=seed,
                                                     shuffle=TRUE,
                                                     class_mode='categorical')
