@@ -8,6 +8,7 @@ library(keras)
 keras::install_keras()
 library(imager)
 
+
 labels <- read_csv("C:/Users/shrey/Downloads/10-monkey-species/monkey_labels.csv")
 View(labels)
 names(labels) <- gsub(" ", "_", names(labels))
