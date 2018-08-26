@@ -1,17 +1,18 @@
 
 library(devtools)
-install_github('rstudio/reticulate',force=T)
+#install_github('rstudio/reticulate',force=T)
 library(reticulate)
 library(tensorflow)
-install_tensorflow(version= "1.1.0")
-install_github("rstudio/keras",force=T)
+install_tensorflow()
+#install_github("rstudio/keras",force=T)
 library(keras)
 keras::install_keras()
 library(imager)
+library(readr)
 
 
 labels <- read_csv("C:/Users/shrey/Downloads/10-monkey-species/monkey_labels.csv")
-View(labels)
+#View(labels)
 names(labels) <- gsub(" ", "_", names(labels))
 train_dir = "C:/Users/shrey/Downloads/10-monkey-species/training/"
 test_dir = "C:/Users/shrey/Downloads/10-monkey-species/validation/"
@@ -28,6 +29,7 @@ image_show <- function(num_image,label){
   }
 }
 
+image_show(3,"n5")
 #Setting up the variables
 LR <- 1e-3
 height<-150L
@@ -112,9 +114,9 @@ model_keras %>%
 
 summary(model_keras)
 
-history <- model_keras  %>% fit_generator(train_generator,
+history <- model_keras  %>% fit_generator((train_generator),
                               # batch_size = batch_size,
                               steps_per_epoch= 1097/64,
                               epochs=200,
-                              validation_data=validation_generator,
+                              validation_data=(validation_generator),
                               validation_steps= 272/64)
