@@ -1,9 +1,13 @@
-library(keras)
+library(devtools)
+install_github('rstudio/reticulate',force=T)
+library(reticulate)
 library(tensorflow)
-install_keras()
+install_tensorflow(version= "1.1.0")
+install_github("rstudio/keras",force=T)
+library(keras)
+keras::install_keras()
 library(imager)
-install_tensorflow()
-library(readr)
+
 labels <- read_csv("C:/Users/shrey/Downloads/10-monkey-species/monkey_labels.csv")
 View(labels)
 names(labels) <- gsub(" ", "_", names(labels))
@@ -71,7 +75,7 @@ validation_num = validation_generator$samples
 #Building the model
 model_keras <- keras_model_sequential()
 
-model1 <- model_keras %>%
+model_keras %>%
   layer_conv_2d(filters=32, kernel_size=c(3,3),input_shape=c(150,150,3)) %>%
   layer_activation("relu") %>%
   layer_max_pooling_2d(pool_size=c(2,2)) %>%
@@ -101,55 +105,14 @@ model1 <- model_keras %>%
   #applying softmax nonlinear activation function to the output layer #to calculate cross-entropy#output layer-10 classes-10 units  
   layer_activation("softmax")
 
-compile1 <- model_keras %>%
+model_keras %>%
   compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = c("binary_accuracy"))
 
-summary(compile1)
+summary(model_keras)
 
-history <- model1$fit_generator(train_generator,
-                                steps_per_epoch= train_num/batch_size,
-                                epochs=epochs,
-                                validation_data=train_generator,
-                                validation_steps= validation_num/batch_size,
-                                callbacks=callbacks_list, 
-                                verbose = 1)
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+history <- model_keras  %>% fit_generator(train_generator,
+                              # batch_size = batch_size,
+                              steps_per_epoch= 1097/64,
+                              epochs=200,
+                              validation_data=validation_generator,
+                              validation_steps= 272/64)
