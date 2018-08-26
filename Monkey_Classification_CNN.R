@@ -34,3 +34,20 @@ epochs <- 200
 data_augmentation <- TRUE
 num_predictions <- 20
 
+# Training generator
+train_datagen <- image_data_generator(
+  rescale=1./255,
+  rotation_range=40,
+  width_shift_range=0.2,
+  height_shift_range=0.2,
+  shear_range=0.2,
+  zoom_range=0.2,
+  horizontal_flip=TRUE,
+  fill_mode='nearest')
+
+train_generator = train_datagen$flow_from_directory(train_dir, 
+                                                    target_size=(height,width),
+                                                    batch_size=batch_size,
+                                                    seed=seed,
+                                                    shuffle=TRUE,
+                                                    class_mode='categorical')
