@@ -37,10 +37,10 @@ LR <- as.integer(1e-3)
 height<-as.integer(150)
 width<-as.integer(150)
 channels<-as.integer(3)
-seed<-as.integer(1337)
+seed<-as.integer(786)
 batch_size <- as.integer(64)
 num_classes <- as.integer(10)
-epoch <- as.integer(200)
+epoch <- as.integer(400)
 data_augmentation <- TRUE
 num_predictions <- as.integer(20)
 
@@ -114,11 +114,11 @@ model_keras %>%
   layer_activation("softmax")
 
 model_keras %>%
-  compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = c("binary_accuracy"))
+  compile(optimizer = optimizer_adam(lr = 0.003, decay = 1e-6), loss = "categorical_crossentropy", metrics = c("acc"))
 
 summary(model_keras)
 
-filepath <- paste(getwd(),"/model.h5f",sep = "")
+#filepath <- paste(getwd(),"/model.h5f",sep = "")
 
 stepEpoch <- train_num %/% batch_size
 Val_num <- validation_num %/% batch_size
