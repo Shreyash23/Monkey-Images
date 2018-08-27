@@ -1,14 +1,15 @@
-#TESTING git
+#TESTING git - Successfull
 library(devtools)
 #install_github('rstudio/reticulate',force=T)
 library(reticulate)
 library(tensorflow)
-install_tensorflow()
+#install_tensorflow()
 #install_github("rstudio/keras",force=T)
 library(keras)
-keras::install_keras()
 library(imager)
 library(readr)
+keras::install_keras()
+
 
 
 labels <- read_csv("C:/Users/shrey/Downloads/10-monkey-species/monkey_labels.csv")
@@ -27,6 +28,7 @@ image_show <- function(num_image,label){
     plot(img)
     print(labels$Common_Name[labels$Label==label])
   }
+  setwd(work_dir)
 }
 
 image_show(3,"n5")
@@ -115,6 +117,9 @@ model_keras %>%
   compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = c("binary_accuracy"))
 
 summary(model_keras)
+
+filepath <- paste(getwd(),"/model.h5f",sep = "")
+
 
 history <- model_keras  %>% fit_generator(train_generator,
                               # batch_size = batch_size,
