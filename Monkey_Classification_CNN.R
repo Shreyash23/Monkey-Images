@@ -33,22 +33,22 @@ image_show <- function(num_image,label){
 
 image_show(3,"n5")
 #Setting up the variables
-LR <- 1e-3
-height<-150L
-width<-150L
-channels<-3
-seed<-1337
-batch_size <- 64
-num_classes <- 10
-epochs <- 200
+LR <- as.integer(1e-3)
+height<-as.integer(150)
+width<-as.integer(150)
+channels<-as.integer(3)
+seed<-as.integer(1337)
+batch_size <- as.integer(64)
+num_classes <- as.integer(10)
+epoch <- as.integer(200)
 data_augmentation <- TRUE
-num_predictions <- 20
+num_predictions <- as.integer(20)
 
 #Augmentation
 # Training generator
 train_datagen <- image_data_generator(
   rescale=as.integer(1%/%255),
-  rotation_range=40,
+  rotation_range=as.integer(40),
   width_shift_range=0.2,
   height_shift_range=0.2,
   shear_range=0.2,
@@ -57,20 +57,20 @@ train_datagen <- image_data_generator(
   fill_mode='nearest')
 
 train_generator = train_datagen$flow_from_directory(train_dir, 
-                                                    target_size = list(height,width),
+                                                    target_size = list(as.integer(height),as.integer(width)),
                                                     color_mode = "rgb",
-                                                    batch_size= batch_size,
-                                                    seed=seed,
+                                                    batch_size= as.integer(batch_size),
+                                                    seed=as.integer(seed),
                                                     shuffle=TRUE,
                                                     class_mode='categorical')
 
 # Test generator
 test_datagen = image_data_generator(rescale=as.integer(1%/%255))
 validation_generator = test_datagen$flow_from_directory(test_dir, 
-                                                        target_size=list(height,width),
+                                                        target_size=list(as.integer(height),as.integer(width)),
                                                         color_mode = "rgb",
-                                                        batch_size=batch_size,
-                                                        seed=seed,
+                                                        batch_size=as.integer(batch_size),
+                                                        seed=as.integer(seed),
                                                         shuffle=FALSE,
                                                         class_mode='categorical')
 
@@ -108,7 +108,7 @@ model_keras %>%
   layer_dropout(0.5) %>%  
   
   #output layer-10 classes-10 units
-  layer_dense(num_classes) %>% 
+  layer_dense(as.integer(num_classes)) %>% 
   
   #applying softmax nonlinear activation function to the output layer #to calculate cross-entropy#output layer-10 classes-10 units  
   layer_activation("softmax")
@@ -120,10 +120,12 @@ summary(model_keras)
 
 filepath <- paste(getwd(),"/model.h5f",sep = "")
 
+stepEpoch <- train_num %/% batch_size
+Val_num <- validation_num %/% batch_size
 
 history <- model_keras  %>% fit_generator(train_generator,
                               # batch_size = batch_size,
-                              steps_per_epoch= train_num %/% batch_size,
-                              epochs=as.integer(epochs),
+                              steps_per_epoch= as.integer(stepEpoch),
+                              epochs=as.integer(epoch),
                               validation_data=validation_generator,
-                              validation_steps= validation_num %/% batch_size)
+                              validation_steps= as.integer(Val_num))
