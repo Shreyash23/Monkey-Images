@@ -3,14 +3,12 @@ library(devtools)
 #install_github('rstudio/reticulate',force=T)
 library(reticulate)
 library(tensorflow)
-#install_tensorflow()
-#install_github("rstudio/keras",force=T)
+install_tensorflow()
+install_github("rstudio/keras",force=T)
 library(keras)
 library(imager)
 library(readr)
-keras::install_keras()
-
-
+install_keras()
 
 labels <- read_csv("C:/Users/shrey/Downloads/10-monkey-species/monkey_labels.csv")
 #View(labels)
@@ -18,20 +16,7 @@ names(labels) <- gsub(" ", "_", names(labels))
 train_dir = "C:/Users/shrey/Downloads/10-monkey-species/training/"
 test_dir = "C:/Users/shrey/Downloads/10-monkey-species/validation/"
 work_dir = getwd()
-#function to display the images correponding to the respective class
-image_show <- function(num_image,label){
-  for (i in 1:num_image){
-    imgdir <- paste(train_dir,label,sep = "")
-    setwd(imgdir)
-    imagefile <- sample(list.files(),1)
-    img <- load.image(imagefile)
-    plot(img)
-    print(labels$Common_Name[labels$Label==label])
-  }
-  setwd(work_dir)
-}
 
-image_show(3,"n5")
 #Setting up the variables
 LR <- as.integer(1e-3)
 height<-as.integer(150)
@@ -47,14 +32,9 @@ num_predictions <- as.integer(20)
 #Augmentation
 # Training generator
 train_datagen <- image_data_generator(
-  rescale=as.integer(1%/%255),
-  rotation_range=as.integer(40),
-  width_shift_range=0.2,
-  height_shift_range=0.2,
-  shear_range=0.2,
-  zoom_range=0.2,
-  horizontal_flip=TRUE,
-  fill_mode='nearest')
+  width_shift_range=0.1,
+  height_shift_range=0.1,
+  horizontal_flip = TRUE)
 
 train_generator = train_datagen$flow_from_directory(train_dir, 
                                                     target_size = list(as.integer(height),as.integer(width)),
@@ -80,8 +60,16 @@ validation_num = validation_generator$samples
 train_num
 validation_num
 
+#Initialising VGG16 and downloading the weights
+vgg <- application_vgg16(weights = "imagenet")
+??application_vgg16()
+
 #Building the model
-model_keras <- keras_model_sequential()
+model_vgg <- keras_model_sequential()
+for (layer in vgg$layers){
+  model_vgg$add(layer)
+}
+model_vgg %>% pop_layer()
 
 model_keras %>%
   layer_conv_2d(filters=32, kernel_size=c(3,3),input_shape=c(150,150,3)) %>%
@@ -130,4 +118,5 @@ history <- model_keras  %>% fit_generator(train_generator,
                               validation_data=validation_generator,
                               validation_steps= as.integer(Val_num))
 
+##########################################################################################
 
